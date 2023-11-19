@@ -49,20 +49,27 @@ ax1.set(xlim=[-10, 10], ylim=[-10, 10])
 ax1.plot(X, Y)
 
 P, = ax1.plot(X[0], Y[0], marker='o')
+RLine, = ax1.plot([0, X[0]], [0, Y[0]], 'g')
 VLine, = ax1.plot([X[0], X[0] + VX[0]], [Y[0], Y[0] + VY[0]], 'r')
 WLine, = ax1.plot([X[0], X[0] + WX[0]], [Y[0], Y[0] + WY[0]], 'b')
 
 ArrowX = np.array([-0.1, 0, -0.1])
 ArrowY = np.array([0.1, 0, -0.1])
 
+RRArrowX, RRArrowY = Rot2D(ArrowX, ArrowY, math.atan2(Y[0], X[0]))
 RVArrowX, RVArrowY = Rot2D(ArrowX, ArrowY, math.atan2(VY[0], VX[0]))
 RWArrowX, RWArrowY = Rot2D(ArrowX, ArrowY, math.atan2(WY[0], WX[0]))
 VArrow, = ax1.plot(RVArrowX + X[0] + VX[0], RVArrowY + Y[0] + VY[0], 'r')
 WArrow, = ax1.plot(RWArrowX + X[0] + WX[0], RWArrowY + Y[0] + WY[0], 'b')
+RArrow, = ax1.plot(RRArrowX + X[0], RRArrowX + Y[0], 'g')
 
 
 def anima(i):
     P.set_data(X[i], Y[i])
+
+    RLine.set_data([0, X[i]], [0, Y[i]])
+    RRArrowX, RRArrowY = Rot2D(ArrowX, ArrowY, math.atan2(Y[i], X[i]))
+    RArrow.set_data(RRArrowX + X[i], RRArrowY + Y[i])
 
     VLine.set_data([X[i], X[i] + VX[i]], [Y[i], Y[i] + VY[i]])
     RVArrowX, RVArrowY = Rot2D(ArrowX, ArrowY, math.atan2(VY[i], VX[i]))
@@ -71,7 +78,7 @@ def anima(i):
     WLine.set_data([X[i], X[i] + WX[i]], [Y[i], Y[i] + WY[i]])
     RWArrowX, RWArrowY = Rot2D(ArrowX, ArrowY, math.atan2(WY[i], WX[i]))
     WArrow.set_data(RWArrowX + X[i] + WX[i], RWArrowY + Y[i] + WY[i])
-    return P, VLine, VArrow, WLine, WArrow
+    return P, RLine, RArrow, VLine, VArrow, WLine, WArrow
 
 
 anim = FuncAnimation(fig, anima, frames=2000, interval=10, repeat=False)
