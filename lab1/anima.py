@@ -22,10 +22,10 @@ phi = t + 0.2 * sp.cos(3 * t)
 # Рассчет формул
 x = r * sp.cos(phi)
 y = r * sp.sin(phi)
-Vx = sp.diff(x, t)
-Vy = sp.diff(y, t)
-Wx = sp.diff(Vx, t)
-Wy = sp.diff(Vy, t)
+Vx = sp.diff(x, t) * 0.2
+Vy = sp.diff(y, t) * 0.2
+Wx = sp.diff(Vx, t) * 0.2
+Wy = sp.diff(Vy, t) * 0.2
 
 # Формирование векторов значений
 T = np.linspace(0, 10, 2000)
@@ -51,7 +51,7 @@ fig = plt.figure()
 
 ax1 = fig.add_subplot(1, 1, 1)
 ax1.axis('equal')
-ax1.set(xlim=[-10, 10], ylim=[-10, 10])
+ax1.set(xlim=[-2, 2], ylim=[-2, 2])
 
 ax1.plot(X, Y)
 
