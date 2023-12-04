@@ -22,13 +22,21 @@ phi = t + 0.2 * sp.cos(3 * t)
 # Рассчет формул
 x = r * sp.cos(phi)
 y = r * sp.sin(phi)
-Vx = sp.diff(x, t) * 0.2
-Vy = sp.diff(y, t) * 0.2
-Wx = sp.diff(Vx, t) * 0.2
-Wy = sp.diff(Vy, t) * 0.2
+
+Vx = sp.diff(x, t)
+Vy = sp.diff(y, t)
+V = sp.sqrt(Vx**2 + Vy**2)
+VxN = Vx / V
+VyN = Vy / V
+
+Wx = sp.diff(Vx, t)
+Wy = sp.diff(Vy, t)
+W = sp.sqrt(Wx**2 + Wy**2)
+WxN = Wx / W
+WyN = Wy / W
 
 # Формирование векторов значений
-T = np.linspace(0, 10, 2000)
+T = np.linspace(0, 10, 1000)
 
 X = np.zeros_like(T)
 Y = np.zeros_like(T)
@@ -41,10 +49,10 @@ WY = np.zeros_like(T)
 for i in np.arange(len(T)):
     X[i] = sp.Subs(x, t, T[i])
     Y[i] = sp.Subs(y, t, T[i])
-    VX[i] = sp.Subs(Vx, t, T[i])
-    VY[i] = sp.Subs(Vy, t, T[i])
-    WX[i] = sp.Subs(Wx, t, T[i])
-    WY[i] = sp.Subs(Wy, t, T[i])
+    VX[i] = sp.Subs(VxN, t, T[i])
+    VY[i] = sp.Subs(VyN, t, T[i])
+    WX[i] = sp.Subs(WxN, t, T[i])
+    WY[i] = sp.Subs(WyN, t, T[i])
 
 # Создаем фигуру
 fig = plt.figure()
@@ -94,7 +102,7 @@ def anima(i):
 
 
 # Запуск анимации
-anim = FuncAnimation(fig, anima, frames=2000, interval=10, repeat=False)
+anim = FuncAnimation(fig, anima, frames=1000, interval=10, repeat=False)
 
 # Показать фигуру
 plt.show()
