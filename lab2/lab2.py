@@ -11,6 +11,16 @@ def Rot2D(X, Y, Alpha):
     return RX, RY
 
 
+# Условия
+m = 1
+J = 3
+alpha = math.pi / 6
+k = 10
+c = 10
+l = 3
+s0 = 0
+phi0 = math.pi / 6
+
 Steps = 1001
 t_fin = 2
 t = np.linspace(0, t_fin, Steps)
