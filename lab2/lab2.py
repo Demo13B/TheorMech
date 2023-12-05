@@ -18,15 +18,18 @@ alpha = math.pi / 6
 k = 10
 c = 10
 l = 3
-s0 = 0
-phi0 = math.pi / 6
+v0 = 0
+w0 = math.pi / 6
 
+# Условия для отрисовки
 Steps = 1000
 t_fin = 2
 t = np.linspace(0, t_fin, Steps)
 
+# Получаем phi(t)
 Phi = 2 * math.pi * t
 
+# Задаем параметры для отрисовки пластины
 Plate_X_Start = np.array([0, 0, 0, 0, 0])
 Plate_Y_Start = np.array([-1, 1, 1, -1, -1])
 Plate_Z_Start = np.array([1, 1, 2, 2, 1])
@@ -42,31 +45,35 @@ Plate_X[0] = Plate_X_Start
 Plate_Y[0] = Plate_Y_Start
 Plate_Z[0] = Plate_Z_Start
 
+# Рассчет положений пластины
 for i in range(1, Steps):
     A = Rot2D(Plate_X[0], Plate_Y[0], Phi[i])
     Plate_X[i] = np.array(A[0])
     Plate_Y[i] = np.array(A[1])
     Plate_Z[i] = Plate_Z[0]
 
-X_Axis = [0, 0, 10, 0, 0]
-Y_Axis = [7, 0, 0, 0, 0]
-Z_Axis = [0, 0, 0, 0, 2]
+# Задаем штифт
+X_Axis = [0, 0]
+Y_Axis = [0, 0]
+Z_Axis = [0, 3]
 
-
+# Создаем график
 fig = plt.figure(figsize=[15, 7])
 ax = fig.add_subplot(1, 1, 1, projection='3d')
 ax.axis('equal')
-ax.set(xlim=[-5, 15], ylim=[-4, 10], zlim=[0, 2])
+ax.set(xlim=[-4, 4], ylim=[-4, 4], zlim=[0, 4])
 
-ax.plot(X_Axis, Y_Axis, Z_Axis, color='black')
+# Отрисовка штифта
+ax.plot(X_Axis, Y_Axis, Z_Axis, color='black', linestyle='--')
 
-Drawed_Box = ax.plot(Plate_X[0], Plate_Y[0], Plate_Z[0])[0]
+# Отрисовка Пластины
+Drawed_Plate = ax.plot(Plate_X[0], Plate_Y[0], Plate_Z[0])[0]
 
 
 def anima(i):
-    Drawed_Box.set_data(Plate_X[i], Plate_Y[i])
-    Drawed_Box.set_3d_properties(Plate_Z[i])
-    return [Drawed_Box]
+    Drawed_Plate.set_data(Plate_X[i], Plate_Y[i])
+    Drawed_Plate.set_3d_properties(Plate_Z[i])
+    return [Drawed_Plate]
 
 
 anim = FuncAnimation(fig, anima, frames=len(t), interval=2, repeat=False)
