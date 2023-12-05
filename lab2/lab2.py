@@ -21,33 +21,32 @@ l = 3
 s0 = 0
 phi0 = math.pi / 6
 
-Steps = 1001
+Steps = 1000
 t_fin = 2
 t = np.linspace(0, t_fin, Steps)
 
 Phi = 2 * math.pi * t
 
-X_Box = np.array([0, 0, 0, 0, 0])
-Y_Box = np.array([-1, 1, 1, -1, -1])
-Z_Box = np.array([1, 1, 2, 2, 1])
+Plate_X_Start = np.array([0, 0, 0, 0, 0])
+Plate_Y_Start = np.array([-1, 1, 1, -1, -1])
+Plate_Z_Start = np.array([1, 1, 2, 2, 1])
 
-X = np.arange(5005)
-X = X.reshape((1001, 5))
+Plate_X = np.arange(Steps * 5)
+Plate_X = Plate_X.reshape((Steps, 5))
 
-X = np.zeros_like(X, float)
-Y = np.zeros_like(X, float)
-Z = np.zeros_like(X, float)
+Plate_X = np.zeros_like(Plate_X, float)
+Plate_Y = np.zeros_like(Plate_X, float)
+Plate_Z = np.zeros_like(Plate_X, float)
 
-X[0] = X_Box
-Y[0] = Y_Box
-Z[0] = Z_Box
+Plate_X[0] = Plate_X_Start
+Plate_Y[0] = Plate_Y_Start
+Plate_Z[0] = Plate_Z_Start
 
-for i in range(1, 1001):
-    A = Rot2D(X[0], Y[0], Phi[i])
-    X[i] = np.array(A[0])
-    Y[i] = np.array(A[1])
-    print(X[i], Y[i])
-    Z[i] = Z[0]
+for i in range(1, Steps):
+    A = Rot2D(Plate_X[0], Plate_Y[0], Phi[i])
+    Plate_X[i] = np.array(A[0])
+    Plate_Y[i] = np.array(A[1])
+    Plate_Z[i] = Plate_Z[0]
 
 X_Axis = [0, 0, 10, 0, 0]
 Y_Axis = [7, 0, 0, 0, 0]
@@ -61,12 +60,12 @@ ax.set(xlim=[-5, 15], ylim=[-4, 10], zlim=[0, 2])
 
 ax.plot(X_Axis, Y_Axis, Z_Axis, color='black')
 
-Drawed_Box = ax.plot(X[0], Y[0], Z[0])[0]
+Drawed_Box = ax.plot(Plate_X[0], Plate_Y[0], Plate_Z[0])[0]
 
 
 def anima(i):
-    Drawed_Box.set_data(X[i], Y[i])
-    Drawed_Box.set_3d_properties(Z[i])
+    Drawed_Box.set_data(Plate_X[i], Plate_Y[i])
+    Drawed_Box.set_3d_properties(Plate_Z[i])
     return [Drawed_Box]
 
 
