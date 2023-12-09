@@ -29,9 +29,9 @@ v0 = 0
 w0 = math.pi / 6
 
 # Рассчет размеров пластины
-height = 3
+height = 2
 length = height * math.tan(alpha)
-print(length)
+remaining_height = l - height
 
 # Рассчет времени
 Steps = 1000
@@ -46,7 +46,8 @@ s = np.sin(math.pi * t)
 Plate_X_Start = np.array([0, 0, 0, 0, 0])
 Plate_Y_Start = np.array(
     [-length / 2, length / 2, length / 2, -length/2, -length/2])
-Plate_Z_Start = np.array([1, 1, height + 1, height + 1, 1])
+Plate_Z_Start = np.array(
+    [remaining_height / 2, remaining_height / 2, height + remaining_height / 2, height + remaining_height / 2, remaining_height / 2])
 
 Plate_X = np.arange(Steps * 5)
 Plate_X = Plate_X.reshape((Steps, 5))
@@ -69,14 +70,15 @@ for i in range(1, Steps):
 # Задание положения штифта
 Pin_X = [0, 0]
 Pin_Y = [0, 0]
-Pin_Zl = [0, 1]
-Pin_Zc = [1, height + 1]
-Pin_Zu = [height + 1, height + 2]
+Pin_Zl = [0, remaining_height / 2]
+Pin_Zc = [remaining_height / 2, height + remaining_height / 2]
+Pin_Zu = [height + remaining_height / 2, height + remaining_height]
 
 # Задаеник положения канал
 Channel_X_Start = np.array([0, 0])
 Channel_Y_Start = np.array([-length/2, length/2])
-Channel_Z_Start = np.array([1, height + 1])
+Channel_Z_Start = np.array(
+    [remaining_height / 2, height + remaining_height / 2])
 
 Channel_X = np.arange(Steps * 2)
 Channel_X = Channel_X.reshape((Steps, 2))
@@ -108,7 +110,7 @@ Point_Z = np.zeros_like(Point_Z, float)
 
 Point_X[0] = 0
 Point_Y[0] = 0
-Point_Z[0] = height / 2 + 1
+Point_Z[0] = height / 2 + remaining_height / 2
 
 # Рассчет положения точки
 for i in range(1, Steps):
@@ -126,8 +128,7 @@ for i in range(1, Steps):
 fig = plt.figure(figsize=[15, 7])
 ax = fig.add_subplot(1, 1, 1, projection='3d')
 ax.axis('equal')
-ax.set(xlim=[- (height + 2), height + 2],
-       ylim=[- (height + 2), height + 2], zlim=[0, height + 2])
+ax.set(xlim=[- l, l], ylim=[- l, l], zlim=[0, l])
 
 # Отрисовка штифта
 ax.plot(Pin_X, Pin_Y, Pin_Zl, color='black')
