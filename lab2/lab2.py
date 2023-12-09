@@ -32,6 +32,7 @@ w0 = math.pi / 6
 height = 2
 length = height * math.tan(alpha)
 remaining_height = l - height
+edge = 1.1 * l
 
 # Рассчет времени
 Steps = 1000
@@ -72,9 +73,18 @@ Pin_X = [0, 0]
 Pin_Y = [0, 0]
 Pin_Zl = [0, remaining_height / 2]
 Pin_Zc = [remaining_height / 2, height + remaining_height / 2]
-Pin_Zu = [height + remaining_height / 2, height + remaining_height]
+Pin_Zu = [height + remaining_height / 2, edge]
 
-# Задаеник положения канал
+# Рассчет подшипников
+theta = np.linspace(0, 2 * math.pi, 100)
+cyl_height = 0.03 * l
+cyl_z = np.linspace(0, cyl_height, 100)
+
+cyl_X = cyl_height * np.cos(theta)
+cyl_Y = cyl_height * np.sin(theta)
+a, cyl_Z = np.meshgrid(theta, cyl_z)
+
+# Задаение положения канала
 Channel_X_Start = np.array([0, 0])
 Channel_Y_Start = np.array([-length/2, length/2])
 Channel_Z_Start = np.array(
@@ -128,22 +138,26 @@ for i in range(1, Steps):
 fig = plt.figure(figsize=[15, 7])
 ax = fig.add_subplot(1, 1, 1, projection='3d')
 ax.axis('equal')
-ax.set(xlim=[- l, l], ylim=[- l, l], zlim=[0, l])
+ax.set(xlim=[- edge, edge], ylim=[- edge, edge], zlim=[0, edge])
 
 # Отрисовка штифта
 ax.plot(Pin_X, Pin_Y, Pin_Zl, color='black')
-ax.plot(Pin_X, Pin_Y, Pin_Zc, color='black', linestyle='--')
+ax.plot(Pin_X, Pin_Y, Pin_Zc, color='black', linestyle='-.')
 ax.plot(Pin_X, Pin_Y, Pin_Zu, color='black')
+
+# Отрисовка подшипников
+ax.plot_wireframe(cyl_X, cyl_Y, cyl_Z, color='black')
+ax.plot_wireframe(cyl_X, cyl_Y, cyl_Z + l - cyl_height, color='black')
 
 # Отрисовка канала
 Channel = ax.plot(Channel_X[0], Channel_Y[0], Channel_Z[0],
-                  linestyle='--', color='black')[0]
+                  linestyle='--', color='blue')[0]
 
 # Отрисовка Пластины
-Drawed_Plate = ax.plot(Plate_X[0], Plate_Y[0], Plate_Z[0])[0]
+Drawed_Plate = ax.plot(Plate_X[0], Plate_Y[0], Plate_Z[0], color='blue')[0]
 
 # Отрисовка точки
-Point = ax.plot(Point_X[0], Point_Y[0], Point_Z[0], marker='.')[0]
+Point = ax.plot(Point_X[0], Point_Y[0], Point_Z[0], marker='.', color='red')[0]
 
 
 def anima(i):
