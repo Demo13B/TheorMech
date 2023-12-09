@@ -1,7 +1,10 @@
 import numpy as np
+from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import math
+
+# Функция поворотa
 
 
 def Rot(X, Y, Alpha):
@@ -9,37 +12,67 @@ def Rot(X, Y, Alpha):
     RY = X * np.sin(Alpha) + Y * np.cos(Alpha)
     return RX, RY
 
+# Функция движения по прямой
+
 
 def S(Y0, Z0, s, angle):
     MY = Y0 + s * np.sin(angle)
     MZ = Z0 + s * np.cos(angle)
     return MY, MZ
 
+# Функция для решения системы
 
-# Условия
+
+def odesys(y, t, m, g, alpha, c, J, k):
+    dy = np.zeros(4)
+    dy[0] = y[2]
+    dy[1] = y[3]
+    a1 = J + m * y[0]**2 * np.sin(alpha)**2
+    a2 = m
+    b1 = -2 * m * y[0] * y[2] * y[3] * np.sin(alpha)**2 - c * y[1]
+    b2 = m * y[0] * y[3]**2 * \
+        np.sin(alpha)**2 - m * g * np.cos(alpha) - k * y[2]
+
+    dy[2] = b2 / a2
+    dy[3] = b1 / a1
+
+    return dy
+
+
+# Константы
 m = 1
 J = 3
 alpha = math.pi / 6
+g = 9.81
 k = 10
 c = 10
 l = 3
-v0 = 0
-w0 = math.pi / 6
 
-# Рассчет размеров пластины
-height = 2
-length = height * math.tan(alpha)
-remaining_height = l - height
-edge = 1.1 * l
+# Начальные условия
+s0 = 0
+phi0 = math.pi / 6
+ds0 = 20
+dphi0 = 0
+
+y0 = [s0, phi0, ds0, dphi0]
 
 # Рассчет времени
 Steps = 1000
 t_fin = 20
 t = np.linspace(0, t_fin, Steps)
 
+# Решение системы уравнений
+Y = odeint(odesys, y0, t, (m, g, alpha, c, J, k))
+
 # Координаты phi(t), s(t)
 Phi = 2 * math.pi * t
 s = np.sin(math.pi * t)
+
+# Рассчет размеров пластины
+height = 2
+length = height * math.tan(alpha)
+remaining_height = l - height
+edge = 1.1 * l
 
 # Задание параметов для отрисовки пластины
 Plate_X_Start = np.array([0, 0, 0, 0, 0])
