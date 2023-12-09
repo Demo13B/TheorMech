@@ -108,13 +108,9 @@ for i in range(1, Steps):
     Channel_Z[i] = Channel_Z[0]
 
 # Рассчет положений точки
-Point_X = np.arange(Steps, dtype=float)
-Point_Y = np.arange(Steps, dtype=float)
-Point_Z = np.arange(Steps, dtype=float)
-
-Point_X = np.zeros_like(Point_X, float)
-Point_Y = np.zeros_like(Point_Y, float)
-Point_Z = np.zeros_like(Point_Z, float)
+Point_X = np.zeros(Steps, dtype=float)
+Point_Y = np.zeros(Steps, dtype=float)
+Point_Z = np.zeros(Steps, dtype=float)
 
 Point_X[0] = 0
 Point_Y[0] = 0
@@ -157,6 +153,8 @@ Drawed_Plate = ax.plot(Plate_X[0], Plate_Y[0], Plate_Z[0], color='blue')[0]
 # Отрисовка точки
 Point = ax.plot(Point_X[0], Point_Y[0], Point_Z[0], marker='.', color='red')[0]
 
+# Функция анимации
+
 
 def anima(i):
     Drawed_Plate.set_data(Plate_X[i], Plate_Y[i])
@@ -171,6 +169,7 @@ def anima(i):
     return [Point]
 
 
+# Анимация
 anim = FuncAnimation(fig, anima, frames=len(t), interval=20, repeat=False)
 
 plt.show()

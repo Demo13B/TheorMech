@@ -64,9 +64,9 @@ t = np.linspace(0, t_fin, Steps)
 # Решение системы уравнений
 Y = odeint(odesys, y0, t, (m, g, alpha, c, J, k))
 
-# Координаты phi(t), s(t)
-Phi = 2 * math.pi * t
-s = np.sin(math.pi * t)
+# Координаты s(t), phi(t)
+s = Y[:, 0]
+phi = Y[:, 1]
 
 # Рассчет размеров пластины
 height = 2
@@ -94,7 +94,7 @@ Plate_Z[0] = Plate_Z_Start
 
 # Рассчет положений пластины
 for i in range(1, Steps):
-    A = Rot(Plate_X[0], Plate_Y[0], Phi[i])
+    A = Rot(Plate_X[0], Plate_Y[0], phi[i])
     Plate_X[i] = np.array(A[0])
     Plate_Y[i] = np.array(A[1])
     Plate_Z[i] = Plate_Z[0]
@@ -135,19 +135,15 @@ Channel_Z[0] = Channel_Z_Start
 
 # Рассчет положений канала
 for i in range(1, Steps):
-    A = Rot(Channel_X[0], Channel_Y[0], Phi[i])
+    A = Rot(Channel_X[0], Channel_Y[0], phi[i])
     Channel_X[i] = np.array(A[0])
     Channel_Y[i] = np.array(A[1])
     Channel_Z[i] = Channel_Z[0]
 
 # Рассчет положений точки
-Point_X = np.arange(Steps, dtype=float)
-Point_Y = np.arange(Steps, dtype=float)
-Point_Z = np.arange(Steps, dtype=float)
-
-Point_X = np.zeros_like(Point_X, float)
-Point_Y = np.zeros_like(Point_Y, float)
-Point_Z = np.zeros_like(Point_Z, float)
+Point_X = np.zeros(Steps, dtype=float)
+Point_Y = np.zeros(Steps, dtype=float)
+Point_Z = np.zeros(Steps, dtype=float)
 
 Point_X[0] = 0
 Point_Y[0] = 0
@@ -159,7 +155,7 @@ for i in range(1, Steps):
     Point_Y[i] += A[0]
     Point_Z[i] += A[1]
 
-    B = Rot(Point_X[i], Point_Y[i], Phi[i])
+    B = Rot(Point_X[i], Point_Y[i], phi[i])
     Point_X[i] = np.array(B[0])
     Point_Y[i] = np.array(B[1])
     Point_Z[i] = Point_Z[i]
@@ -201,7 +197,7 @@ def anima(i):
     Point.set_data(Point_X[i], Point_Y[i])
     Point.set_3d_properties(Point_Z[i])
 
-    return [Point]
+    return [Drawed_Plate, Channel, Point]
 
 
 anim = FuncAnimation(fig, anima, frames=len(t), interval=20, repeat=False)
