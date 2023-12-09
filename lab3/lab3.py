@@ -2,7 +2,23 @@ import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+from matplotlib.gridspec import GridSpec
 import math
+
+# Функция анимации
+
+
+def anima(i):
+    Drawed_Plate.set_data(Plate_X[i], Plate_Y[i])
+    Drawed_Plate.set_3d_properties(Plate_Z[i])
+
+    Channel.set_data(Channel_X[i], Channel_Y[i])
+    Channel.set_3d_properties(Channel_Z[i])
+
+    Point.set_data(Point_X[i], Point_Y[i])
+    Point.set_3d_properties(Point_Z[i])
+
+    return [Drawed_Plate, Channel, Point]
 
 # Функция поворотa
 
@@ -67,6 +83,16 @@ Y = odeint(odesys, y0, t, (m, g, alpha, c, J, k))
 # Координаты s(t), phi(t)
 s = Y[:, 0]
 phi = Y[:, 1]
+ds = Y[:, 2]
+dphi = Y[:, 3]
+dds = np.array([odesys(y, t, m, g, alpha, c, J, k)[2] for y, t in zip(Y, t)])
+ddphi = np.array([odesys(y, t, m, g, alpha, c, J, k)[3] for y, t in zip(Y, t)])
+
+# Nbx, Nby
+Nbx = -m * np.sin(alpha) * (l + s * np.cos(alpha)) * \
+    (s * ddphi + 2 * ds * dphi) / (2 * l)
+Nby = -(m / 2) * ((s / l) * np.sin(alpha) *
+                  ((l + s * np.cos(alpha)) * dphi**2 + g) - dds * np.sin(alpha))
 
 # Рассчет размеров пластины
 height = 2
@@ -162,44 +188,54 @@ for i in range(1, Steps):
 
 
 # Создание модели
-fig = plt.figure(figsize=[15, 7])
-ax = fig.add_subplot(1, 1, 1, projection='3d')
-ax.axis('equal')
-ax.set(xlim=[- edge, edge], ylim=[- edge, edge], zlim=[0, edge])
+fig = plt.figure(figsize=[15, 9])
+gs = GridSpec(5, 1, 1, height_ratios=[3, 1, 1, 1, 1])
+ax1 = fig.add_subplot(gs[0], projection='3d')
+ax1.axis('equal')
+ax1.set(xlim=[- edge, edge], ylim=[- edge, edge], zlim=[0, edge])
 
 # Отрисовка штифта
-ax.plot(Pin_X, Pin_Y, Pin_Zl, color='black')
-ax.plot(Pin_X, Pin_Y, Pin_Zc, color='black', linestyle='-.')
-ax.plot(Pin_X, Pin_Y, Pin_Zu, color='black')
+ax1.plot(Pin_X, Pin_Y, Pin_Zl, color='black')
+ax1.plot(Pin_X, Pin_Y, Pin_Zc, color='black', linestyle='-.')
+ax1.plot(Pin_X, Pin_Y, Pin_Zu, color='black')
 
 # Отрисовка подшипников
-ax.plot_wireframe(cyl_X, cyl_Y, cyl_Z, color='black')
-ax.plot_wireframe(cyl_X, cyl_Y, cyl_Z + l - cyl_height, color='black')
+ax1.plot_wireframe(cyl_X, cyl_Y, cyl_Z, color='black')
+ax1.plot_wireframe(cyl_X, cyl_Y, cyl_Z + l - cyl_height, color='black')
 
 # Отрисовка канала
-Channel = ax.plot(Channel_X[0], Channel_Y[0], Channel_Z[0],
-                  linestyle='--', color='blue')[0]
+Channel = ax1.plot(Channel_X[0], Channel_Y[0], Channel_Z[0],
+                   linestyle='--', color='blue')[0]
 
 # Отрисовка Пластины
-Drawed_Plate = ax.plot(Plate_X[0], Plate_Y[0], Plate_Z[0], color='blue')[0]
+Drawed_Plate = ax1.plot(Plate_X[0], Plate_Y[0], Plate_Z[0], color='blue')[0]
 
 # Отрисовка точки
-Point = ax.plot(Point_X[0], Point_Y[0], Point_Z[0], marker='.', color='red')[0]
+Point = ax1.plot(Point_X[0], Point_Y[0], Point_Z[0],
+                 marker='.', color='red')[0]
 
-
-def anima(i):
-    Drawed_Plate.set_data(Plate_X[i], Plate_Y[i])
-    Drawed_Plate.set_3d_properties(Plate_Z[i])
-
-    Channel.set_data(Channel_X[i], Channel_Y[i])
-    Channel.set_3d_properties(Channel_Z[i])
-
-    Point.set_data(Point_X[i], Point_Y[i])
-    Point.set_3d_properties(Point_Z[i])
-
-    return [Drawed_Plate, Channel, Point]
-
-
+# Анимация
 anim = FuncAnimation(fig, anima, frames=len(t), interval=20, repeat=False)
+
+# Построение графиков
+ax2 = fig.add_subplot(gs[1])
+ax2.plot(t, s)
+ax2.set_xlabel('$t$')
+ax2.set_ylabel('$s(t)$')
+
+ax3 = fig.add_subplot(gs[2])
+ax3.plot(t, phi)
+ax3.set_xlabel('$t$')
+ax3.set_ylabel('$\phi(t)$')
+
+ax4 = fig.add_subplot(gs[3])
+ax4.plot(t, Nbx)
+ax4.set_xlabel('$t$')
+ax4.set_ylabel('$N_{b_{x}}$')
+
+ax5 = fig.add_subplot(gs[4])
+ax5.plot(t, Nby)
+ax5.set_xlabel('$t$')
+ax5.set_ylabel('$N_{b_{y}}$')
 
 plt.show()
