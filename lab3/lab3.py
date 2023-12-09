@@ -5,8 +5,6 @@ from matplotlib.animation import FuncAnimation
 from matplotlib.gridspec import GridSpec
 import math
 
-# Функция анимации
-
 
 def anima(i):
     Drawed_Plate.set_data(Plate_X[i], Plate_Y[i])
@@ -20,23 +18,17 @@ def anima(i):
 
     return [Drawed_Plate, Channel, Point]
 
-# Функция поворотa
-
 
 def Rot(X, Y, Alpha):
     RX = X * np.cos(Alpha) - Y * np.sin(Alpha)
     RY = X * np.sin(Alpha) + Y * np.cos(Alpha)
     return RX, RY
 
-# Функция движения по прямой
-
 
 def S(Y0, Z0, s, angle):
     MY = Y0 + s * np.sin(angle)
     MZ = Z0 + s * np.cos(angle)
     return MY, MZ
-
-# Функция для решения системы
 
 
 def odesys(y, t, m, g, alpha, c, J, k):
@@ -189,8 +181,8 @@ for i in range(1, Steps):
 
 # Создание модели
 fig = plt.figure(figsize=[15, 9])
-gs = GridSpec(5, 1, 1, height_ratios=[3, 1, 1, 1, 1])
-ax1 = fig.add_subplot(gs[0], projection='3d')
+gs = GridSpec(3, 2, height_ratios=[3, 1, 1])
+ax1 = fig.add_subplot(gs[0, :], projection='3d')
 ax1.axis('equal')
 ax1.set(xlim=[- edge, edge], ylim=[- edge, edge], zlim=[0, edge])
 
@@ -215,26 +207,26 @@ Point = ax1.plot(Point_X[0], Point_Y[0], Point_Z[0],
                  marker='.', color='red')[0]
 
 # Анимация
-anim = FuncAnimation(fig, anima, frames=len(t), interval=20, repeat=False)
+anim = FuncAnimation(fig, anima, frames=len(t), interval=10, repeat=False)
 
 # Построение графиков
-ax2 = fig.add_subplot(gs[1])
-ax2.plot(t, s)
+ax2 = fig.add_subplot(gs[2])
+ax2.plot(t, s, color='red')
 ax2.set_xlabel('$t$')
 ax2.set_ylabel('$s(t)$')
 
-ax3 = fig.add_subplot(gs[2])
-ax3.plot(t, phi)
+ax3 = fig.add_subplot(gs[3])
+ax3.plot(t, phi, color='blue')
 ax3.set_xlabel('$t$')
 ax3.set_ylabel('$\phi(t)$')
 
-ax4 = fig.add_subplot(gs[3])
-ax4.plot(t, Nbx)
+ax4 = fig.add_subplot(gs[4])
+ax4.plot(t, Nbx, color='green')
 ax4.set_xlabel('$t$')
 ax4.set_ylabel('$N_{b_{x}}$')
 
-ax5 = fig.add_subplot(gs[4])
-ax5.plot(t, Nby)
+ax5 = fig.add_subplot(gs[5])
+ax5.plot(t, Nby, color='green')
 ax5.set_xlabel('$t$')
 ax5.set_ylabel('$N_{b_{y}}$')
 
